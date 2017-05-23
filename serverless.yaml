@@ -1,0 +1,45 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Parameters:
+  StackName:
+    Type: String
+    Description: Name of the stack which you want to make.
+    Default: check
+  TemplateName:
+    Type: String
+    Description: Template file name which is saved in S3 Bucket.
+    Default: temp.yaml
+  BucketName:
+    Type: String
+    Description: Name of the S3 bucket which contain template file.
+    Default: nidhish-swagger
+Resources:
+  stackCreationFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs6.10
+      MemorySize: 1024
+      Timeout: 55
+      Policies:
+         Statement:
+           - Effect: Allow
+             Action:
+               - cloudformation:*
+             Resource: '*'
+           - Effect: Allow
+             Action:
+               - s3:GetObject
+             Resource: !Sub 'arn:aws:s3:::${BucketName}/*'
+      Environment:
+         Variables:
+           S3_BUCKET: bucket-name
+           S3_BUCKET_FILE_LOCATION: !Sub "https://s3.amazonaws.com/${BucketName}/${TemplateName}"
+           STACK_NAME: !Ref StackName
+           AAAAA: !Sub "arn:aws:s3:::${BucketName/*"
+      Events:
+        lambdaFunctionAPI:
+          Type: Api
+          Properties:
+            Path: /TimeResource
+            Method: GET
